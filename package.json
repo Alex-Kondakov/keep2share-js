@@ -1,0 +1,33 @@
+{
+  "name": "keep2share",
+  "version": "0.1.0",
+  "description": "Keep2share and Fileboom Node.Js API implementation",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alex-Kondakov/keep2share-js.git"
+  },
+  "keywords": [
+    "Node",
+    "keep2share",
+    "fileboom",
+    "js",
+    "javascript"
+  ],
+  "author": "Alex Kondakov",
+  "license": "SEE LICENSE IN <LICENSE>",
+  "bugs": {
+    "url": "https://github.com/Alex-Kondakov/keep2share-js/issues"
+  },
+  "homepage": "https://github.com/Alex-Kondakov/keep2share-js#readme",
+  "dependencies": {
+    "promise": "^8.1.0",
+    "request": "^2.88.2"
+  }
+}
