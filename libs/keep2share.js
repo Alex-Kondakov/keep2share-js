@@ -5,6 +5,7 @@ const https = require('https');
 const Promise = require('promise');
 const fs = require('fs');
 const request  = require('request');
+const urlAPI  = require('url');
 
 exports.init = (username, password, hostname) => {
     return {
@@ -287,8 +288,50 @@ exports.init = (username, password, hostname) => {
                     await resolve(uploadResult);
                 })();
             })
-
-
         },
+        //Get url to download
+        getUrl (file_id, free_download_key, captcha_challenge, captcha_response, url_referrer) {
+            return this.sendRequest('api/v2/getUrl', {"auth_token":this._token, "file_id":file_id, "free_download_key":free_download_key, "captcha_challenge":captcha_challenge, "captcha_response":captcha_response, "url_referrer":url_referrer})
+                .then(response => {
+                    return response;
+                });
+        },
+        //Download file by it's URL. path is destination directory path without file name
+        download (fileUrl, path) {
+            return new Promise ((resolve, reject) => {
+                let fileId = urlAPI.parse(fileUrl).pathname.split('/')[2];
+                if (fileId) {
+                    resolve(fileId);
+                } else {
+                    reject('Wrong URL')
+                }
+            })
+            .then(response => this.getUrl(response))
+            .then(response => {
+                if (response.data.code == 200) {
+                    fileName = response.data.url.split('=');
+                    fileName = fileName[fileName.length - 1];
+                    return {
+                        name: fileName,
+                        url: response.data.url
+                    }
+                } else {
+                    return response.data.message;
+                }
+            })
+            .then(response => {
+                return new Promise ((res, rej) => {
+                    https.get(response.url, (r) => {
+                        const fileStream = fs.createWriteStream(path + '/' + response.name);
+                        r.pipe(fileStream);
+                        fileStream.on('finish', () => {
+                            fileStream.close();
+                            res('done');
+                        })
+                    })
+                })
+            })
+        }
+
     }
 }
