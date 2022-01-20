@@ -6,9 +6,8 @@ Node.Js implementation of Keep2Share and Fileboom APIs.
 
 ```shell
 # cd /your/projects/dir
-# mkdir k2s
-# cd k2s
 # git clone https://github.com/Alex-Kondakov/keep2share-js.git
+# cd keep2share-js
 # npm install
 ```
 
