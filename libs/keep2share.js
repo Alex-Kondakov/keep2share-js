@@ -227,6 +227,26 @@ exports.init = (username, password, hostname) => {
                     })
                 })
         },
+        //Uploads all files from passed array
+        uploadAll (filePaths, parent_id="/", preferred_node="") {
+            return new Promise ((resolve, reject) => {
+                (async () => {
+                     try {
+                         //Uploaded links
+                        let uploaded = []
+                        for (const file of filePaths) {
+                            await this.upload(file, parent_id, preferred_node)
+                                .then(response => uploaded.push(response))
+                                .catch(error => reject('filehostKeep2share.js uploadAll ' + error))
+                        }
+                        resolve(uploaded)
+                    }
+                    catch (err) {
+                        reject('filehostKeep2share.js uploadAll ' + err)
+                    }
+                })()
+            })
+        },
         //Add remote upload. urls - array of remote urls. Returns promise with response body resolved
         remoteUploadAdd (urls) {
             return this.sendRequest('api/v2/remoteUploadAdd', {"auth_token":this._token, "urls":urls})
