@@ -1,6 +1,7 @@
 // (c) Alex Kondakov
 // MoneyPlatform API v.2 implementation
 
+
 const https = require('https');
 const Promise = require('promise');
 const fs = require('fs');
