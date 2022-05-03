@@ -5,10 +5,8 @@ Node.Js implementation of Keep2Share and Fileboom APIs.
 # Installation
 
 ```shell
-# cd /your/projects/dir
-# git clone https://github.com/Alex-Kondakov/keep2share-js.git
-# cd keep2share-js
-# npm install
+# cd /your/project/directory
+# npm install keep2share --save
 ```
 
 # Usage
@@ -16,7 +14,7 @@ Node.Js implementation of Keep2Share and Fileboom APIs.
 ## Uploading:
 
 ```javascript
-const k2s = require('../libs/keep2share');
+const k2s = require('keep2share');
 
 //Use fboom.me instead of keep2share.cc if you want interact with Fileboom
 const keep2share = k2s.init('YOUR EMAIL HERE', 'YOUR PASSWORD HERE', 'keep2share.cc');
@@ -38,7 +36,7 @@ const keep2share = k2s.init('YOUR EMAIL HERE', 'YOUR PASSWORD HERE', 'keep2share
 ## Downloading:
 
 ```javascript
-const k2s = require('../libs/keep2share');
+const k2s = require('keep2share');
 
 //Use fboom.me instead of keep2share.cc if you want interact with Fileboom
 const keep2share = k2s.init('YOUR EMAIL HERE', 'YOUR PASSWORD HERE', 'keep2share.cc');

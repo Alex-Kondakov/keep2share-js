@@ -1,6 +1,6 @@
 //Keep2Share API v.2 example requests
 
-const k2s = require('../libs/keep2share');
+const k2s = require('keep2share');
 
 //Use fboom.me instead of keep2share.cc if you want interact with Fileboom
 const keep2share = k2s.init('YOUR EMAIL HERE', 'YOUR PASSWORD HERE', 'keep2share.cc');
