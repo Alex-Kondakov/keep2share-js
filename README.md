@@ -14,37 +14,37 @@ Node.Js implementation of Keep2Share and Fileboom APIs.
 ## Uploading:
 
 ```javascript
-//Use fboom.me instead of keep2share.cc if you want interact with Fileboom
-const keep2share = require('keep2share').init('YOUR EMAIL HERE', 'YOUR PASSWORD HERE', 'keep2share.cc');
+import * as API from 'keep2share'
 
-(async () => {
-    await keep2share.login()
-        .then(response => {
-            console.log(response)
-        })
-    await keep2share.upload('/full/path/to/your/file.rar')
-        .then( response => {
-            console.log(response)
-        })
+const k2s = API.init('YOUR EMAIL HERE', 'YOUR PASSWORD HERE', 'keep2share.cc')
 
-})()
+await k2s.login()
+    .then(response => {
+        console.log(response)
+    })
+await k2s.upload('/full/path/to/your/file.rar')
+    .then( response => {
+        console.log(response)
+    })
+
 ```
 
 ## Downloading:
 
 ```javascript
 //Use fboom.me instead of keep2share.cc if you want interact with Fileboom
-const keep2share = require('keep2share').init('YOUR EMAIL HERE', 'YOUR PASSWORD HERE', 'keep2share.cc');
+import * as API from 'keep2share'
 
-(async () => {
-    await keep2share.login()
-        .then(response => {
-            console.log(response);
-        })
-    await keep2share.download('https://k2s.cc/file/b8978a5bbc118/simplehtmldom_1_9_1.zip', '/path/to/assets/')
-        .then( response => {
-            console.log(response);
-        })
+const k2s = API.init('YOUR EMAIL HERE', 'YOUR PASSWORD HERE', 'keep2share.cc')
 
-})()
+await k2s.login()
+    .then(response => {
+        console.log(response);
+    })
+await k2s.download('https://k2s.cc/file/sdfgsdfgsdfsdfh/file.rar', '/path/to/assets')
+    .then( response => {
+        console.log(response);
+    })
+
+
 ```

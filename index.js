@@ -1,14 +1,13 @@
 // (c) Alex Kondakov
 // MoneyPlatform API v.2 implementation
 
+//Import modules
+import fetch, { FormData, fileFrom, fileFromSync } from 'node-fetch'
+import https from 'https'
+import * as urlAPI from 'url'
+import fs from 'fs'
 
-const https = require('https');
-const Promise = require('promise');
-const fs = require('fs');
-const request  = require('request');
-const urlAPI  = require('url');
-
-exports.init = (username, password, hostname) => {
+export const init = (username, password, hostname) => {
     return {
         _username: username,
         _password: password,
@@ -53,32 +52,22 @@ exports.init = (username, password, hostname) => {
             return this._folders;
         },
         //Send request. First parameter is API url end point. Second parameter is object contain request body. Returns promise
+        
         sendRequest (endPoint, requestBody) {
-            return new Promise ((resolve, reject) => {
-                let data = '';
-                const requestBodyJSON = JSON.stringify(requestBody);
-                const options = {
-                    hostname: this._hostname,
-                    port: 443,
-                    path: `/${endPoint}`,
-                    method: 'POST',
+            return new Promise (async (resolve, reject) => {
+                try {
+                    const response = await fetch(`https://${this._hostname}/${endPoint}`, {
+                        method: 'POST',
+                        body: JSON.stringify(requestBody)
+                    })
+                    const data = await response.json()
+                    resolve({
+                        code: data.code,
+                        data: data
+                    })
+                } catch(e) {
+                    reject(e)
                 }
-                const makeRequest = https.request(options, response => {
-                    response.on('data', chunk => {
-                        data += chunk.toString();
-                    });
-                    response.on('end', () => {
-                        resolve({
-                            code: response.statusCode,
-                            data: JSON.parse(data)
-                        });
-                    });
-                    response.on('error', error => {
-                        reject(error);
-                    });
-                })
-                makeRequest.write(requestBodyJSON);
-                makeRequest.end();
             })
         },
         //Passing login parameters to this.setRequest. Returns promise with response body resolved. Saves authorization token to this._token
@@ -203,28 +192,30 @@ exports.init = (username, password, hostname) => {
         upload (filePath, parent_id="/", preferred_node="") {
             return this.sendRequest('api/v2/getUploadFormData', {"auth_token":this._token, "parent_id":parent_id, "preferred_node":preferred_node})
                 .then(response => {
-                    let formData = {};
+                    const formData = new FormData()
+                    const target = fileFromSync(filePath)
                     if (response.code == 200) {
-                        formData = {
-                            ajax: `${response.data.form_data.ajax}`,
-                            signature: response.data.form_data.signature,
-                            params: response.data.form_data.params
-                        }
-                        formData[response.data.file_field] = fs.createReadStream(filePath);
+                        formData.set('ajax', `${response.data.form_data.ajax}`)
+                        formData.set('signature', response.data.form_data.signature)
+                        formData.set('params', response.data.form_data.params)
+                        formData.set(response.data.file_field, target)
                     } else {
-                        formData = {error: 'No form data received'};
+                        formData.set('error', 'No form data received')
                     }
                     return {url: response.data.form_action, formData: formData}
                 })
                 .then(response => {
-                    return new Promise ((resolve, reject) => {
-                        request.post(response, (err, httpResponse, body) => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                resolve(JSON.parse(body));
-                            }
-                        })
+                    return new Promise (async (resolve, reject) => {
+                        try {
+                            const request = await fetch(response.url, {
+                                method: 'POST',
+                                body: response.formData
+                            })
+                            const data = await request.json()
+                            resolve(data)
+                        } catch(e) {
+                            reject(e)
+                        }
                     })
                 })
         },
@@ -330,8 +321,8 @@ exports.init = (username, password, hostname) => {
             .then(response => this.getUrl(response))
             .then(response => {
                 if (response.data.code == 200) {
-                    fileName = response.data.url.split('=');
-                    fileName = fileName[fileName.length - 1];
+                    let fileName = new urlAPI.URL(response.data.url).searchParams.get('filename')
+                    console.log(`Downloading ${fileName}`)
                     return {
                         name: fileName,
                         url: response.data.url
@@ -347,7 +338,11 @@ exports.init = (username, password, hostname) => {
                         r.pipe(fileStream);
                         fileStream.on('finish', () => {
                             fileStream.close();
-                            res('done');
+                            res(true);
+                        })
+                        fileStream.on('error', () => {
+                            fileStream.close();
+                            rej(false);
                         })
                     })
                 })
